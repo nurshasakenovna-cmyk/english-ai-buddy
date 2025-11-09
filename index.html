@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>English AI Buddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #7c3aed;
+      --accent: #ec4899;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --dark: #1f2937;
+      --light: #f8fafc;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      padding: 1rem 5%;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    .logo span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 0;
+      width: 0; height: 2px;
+      background: var(--primary);
+      transition: 0.3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      background: var(--gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+      opacity: 0.3;
+    }
+    .hero-content {
+      max-width: 800px;
+      z-index: 2;
+      animation: fadeInUp 1s ease;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .hero h1 span { color: #fbbf24; }
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Sections */
+    section {
+      padding: 100px 5%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: var(--primary);
+    }
+
+    /* Page Styles */
+    #page1 { background: linear-gradient(135deg, #a78bfa, #c4b5fd); color: white; }
+    #page2 { background: linear-gradient(135deg, #60a5fa, #93c5fd); color: white; }
+    #page3 { background: linear-gradient(135deg, #34d399, #6ee7b7); color: white; }
+    #page4 { background: linear-gradient(135deg, #fbbf24, #fcd34d); color: var(--dark); }
+    #page5 { background: linear-gradient(135deg, #f87171, #fca5a5); color: white; }
+
+    /* Skill Assessment */
+    .assessment {
+      background: rgba(255,255,255,0.2);
+      padding: 2rem;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .question {
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.8s ease forwards;
+      opacity: 0;
+    }
+    .question label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .option {
+      background: rgba(255,255,255,0.3);
+      padding: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: center;
+    }
+    .option:hover, .option.selected {
+      background: white;
+      color: var(--primary);
+      transform: scale(1.05);
+    }
+    #assessment-result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.3);
+      border-radius: 15px;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Conversation Starters */
+    .prompt-card {
+      background: rgba(255,255,255,0.25);
+      padding: 1.5rem;
+      border-radius: 15px;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(8px);
+      transition: 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+    .prompt-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Skill Building */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .activity {
+      background: rgba(255,255,255,0.3);
+      padding: 1.5rem;
+      border-radius: 15px;
+      text-align: center;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .activity:hover { transform: scale(1.05); }
+    .activity i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    /* Progress Tracking */
+    .progress-container {
+      background: rgba(255,255,255,0.3);
+      padding: 2rem;
+      border-radius: 20px;
+      text-align: center;
+    }
+    .progress-bar {
+      height: 20px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      border-radius: 10px;
+      transition: width 1s ease;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat {
+      text-align: center;
+      min-width: 120px;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    /* Advanced Techniques */
+    .technique {
+      background: rgba(255,255,255,0.25);
+      padding: 1.5rem;
+      border-radius: 15px;
+      margin-bottom: 1rem;
+      position: relative;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .technique:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .technique::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 5px; height: 100%;
+      background: var(--accent);
+      border-radius: 5px;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      .nav-links { display: none; }
+      .options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">English <span>AI</span> Buddy</div>
+    <div class="nav-links">
+      <a href="#page1">Assessment</a>
+      <a href="#page2">Starters</a>
+      <a href="#page3">Activities</a>
+      <a href="#page4">Progress</a>
+      <a href="#page5">Advanced</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>English AI Buddy</h1>
+      <p>Your Personal ChatGPT Guide for Learning English</p>
+      <p style="font-size:1.1rem; opacity:0.9;">
+        75% of students say English is crucial. Only 25% use AI. <strong>Let’s change that.</strong>
+      </p>
+      <a href="#page1" class="btn btn-primary">Start Your Journey</a>
+    </div>
+  </section>
+
+  <!-- Page 1: Skill Assessment -->
+  <section id="page1">
+    <div class="container">
+      <h2 class="section-title">1. Skill Assessment</h2>
+      <div class="assessment">
+        <div class="question" style="animation-delay: 0.2s;">
+          <label>1. How confident are you speaking English?</label>
+          <div class="options">
+            <div class="option" data-score="1">Not at all</div>
+            <div class="option" data-score="2">A little</div>
+            <div class="option" data-score="3">Okay</div>
+            <div class="option" data-score="4">Confident</div>
+          </div>
+        </div>
+        <div class="question" style="animation-delay: 0.4s;">
+          <label>2. Do you understand English movies without subtitles?</label>
+          <div class="options">
+            <div class="option" data-score="1">Never</div>
+            <div class="option" data-score="2">Rarely</div>
+            <div class="option" data-score="3">Sometimes</div>
+            <div class="option" data-score="4">Always</div>
+          </div>
+        </div>
+        <div class="question" style="animation-delay: 0.6s;">
+          <label>3. Can you write a professional email in English?</label>
+          <div class="options">
+            <div class="option" data-score="1">No</div>
+            <div class="option" data-score="2">With help</div>
+            <div class="option" data-score="3">Yes, basic</div>
+            <div class="option" data-score="4">Flawlessly</div>
+          </div>
+        </div>
+        <div id="assessment-result"></div>
+        <button class="btn btn-primary" onclick="calculateAssessment()" style="margin-top: 1rem;">Get My Level</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Page 2: Conversation Starters -->
+  <section id="page2">
+    <div class="container">
+      <h2 class="section-title">2. Conversation Starters</h2>
+      <div id="starters">
+        <div class="prompt-card">
+          <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          <p><strong>Beginner:</strong> "Act as my English friend. Start a casual chat about weekend plans. Correct me gently."</p>
+        </div>
+        <div class="prompt-card">
+          <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          <p><strong>Job Interview:</strong> "Simulate a job interview for a marketing role. Ask 5 tough questions and give feedback."</p>
+        </div>
+        <div class="prompt-card">
+          <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          <p><strong>Travel:</strong> "You're a hotel receptionist in London. I just arrived. Role-play check-in and ask about my stay."</p>
+        </div>
+        <div class="prompt-card">
+          <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          <p><strong>Debate:</strong> "Debate with me: 'Social media does more harm than good.' Take the opposite side and challenge me."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Page 3: Skill-Building Activities -->
+  <section id="page3">
+    <div class="container">
+      <h2 class="section-title">3. Skill-Building Activities</h2>
+      <div class="activity-grid">
+        <div class="activity" onclick="alert('Vocabulary: Open ChatGPT and type the prompt: Give me 10 advanced synonyms for happy with example sentences.')">
+          <i class="fas fa-book"></i>
+          <h3>Vocabulary</h3>
+          <p>"Give me 10 advanced synonyms for 'happy' with example sentences."</p>
+        </div>
+        <div class="activity" onclick="alert('Writing: Copy this prompt to ChatGPT: Correct this email and suggest 3 improvements: [paste your text]')">
+          <i class="fas fa-pen"></i>
+          <h3>Writing</h3>
+          <p>"Correct this email and suggest 3 improvements: [paste your text]"</p>
+        </div>
+        <div class="activity" onclick="alert('Listening: Copy this to ChatGPT: Summarize this TED Talk in 5 bullet points: [paste link]')">
+          <i class="fas fa-headphones"></i>
+          <h3>Listening</h3>
+          <p>"Summarize this TED Talk in 5 bullet points: [link]"</p>
+        </div>
+        <div class="activity" onclick="alert('Speaking: Record yourself and paste to ChatGPT: Record me speaking for 1 min on climate change. Transcribe and rate fluency.')">
+          <i class="fas fa-comments"></i>
+          <h3>Speaking</h3>
+          <p>"Record me speaking for 1 min on 'climate change'. Transcribe and rate fluency."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Page 4: Progress Tracking -->
+  <section id="page4">
+    <div class="container">
+      <h2 class="section-title">4. Progress Tracking</h2>
+      <div class="progress-container">
+        <h3>Your English Journey</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p><span id="progress-percent">0%</span> Complete</p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-number" id="days">0</div>
+            <div>Days Active</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number" id="sessions">0</div>
+            <div>AI Sessions</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number" id="words">0</div>
+            <div>Words Learned</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="logSession()" style="margin-top: 2rem;">Log Today's Practice</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Page 5: Advanced Techniques -->
+  <section id="page5">
+    <div class="container">
+      <h2 class="section-title">5. Advanced Techniques</h2>
+      <div>
+        <div class="technique" onclick="copyTechnique(this)">
+          <strong>Chain of Thought:</strong> "Explain quantum physics like I'm 10, then 15, then a college student. Show progression."
+        </div>
+        <div class="technique" onclick="copyTechnique(this)">
+          <strong>Role Reversal:</strong> "You are my strict English teacher. I just gave a presentation. Roast my mistakes brutally, then fix them."
+        </div>
+        <div class="technique" onclick="copyTechnique(this)">
+          <strong>Multi-Step Tasks:</strong> "Plan a 3-day trip to Paris. Include budget, itinerary, and 5 survival phrases in French with English translation."
+        </div>
+        <div class="technique" onclick="copyTechnique(this)">
+          <strong>Self-Reflection:</strong> "Compare my writing from last week vs today. Highlight 3 improvements and 2 areas to work on."
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Assessment Logic
+    let totalScore = 0;
+    let answered = 0;
+
+    document.querySelectorAll('.option').forEach(option => {
+      option.addEventListener('click', function() {
+        const question = this.closest('.question');
+        question.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        totalScore = Array.from(document.querySelectorAll('.selected')).reduce((s, el) => s + parseInt(el.dataset.score), 0);
+        answered = document.querySelectorAll('.selected').length;
+      });
+    });
+
+    function calculateAssessment() {
+      if (answered < 3) {
+        alert("Please answer all 3 questions!");
+        return;
+      }
+      const avg = Math.round((totalScore / 12) * 100);
+      let level = "";
+      if (avg <= 35) level = "Beginner";
+      else if (avg <= 60) level = "Elementary";
+      else if (avg <= 80) level = "Intermediate";
+      else level = "Advanced";
+
+      document.getElementById('assessment-result').innerHTML = `
+        <h3>🎯 Your Level: <strong>${level}</strong> (${avg}%)</h3>
+        <p>Focus on: <strong>${avg < 50 ? 'Speaking & Basics' : avg < 75 ? 'Fluency & Writing' : 'Advanced Nuance & Idioms'}</strong></p>
+      `;
+      document.getElementById('assessment-result').style.display = 'block';
+    }
+
+    // Copy Prompt
+    function copyPrompt(btn) {
+      const text = btn.parentElement.querySelector('p').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = "Copy", 2000);
+      }).catch(() => alert("Copy failed! Use Ctrl+C"));
+    }
+
+    // Copy Technique
+    function copyTechnique(el) {
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        alert("Copied to clipboard!");
+      }).catch(() => alert("Copy failed! Use Ctrl+C"));
+    }
+
+    // Progress Tracking
+    let progress = localStorage.getItem('englishProgress') ? JSON.parse(localStorage.getItem('englishProgress')) : {
+      percent: 0,
+      days: 0,
+      sessions: 0,
+      words: 0,
+      lastVisit: null
+    };
+
+    function updateProgress() {
+      document.getElementById('progress-fill').style.width = progress.percent + '%';
+      document.getElementById('progress-percent').innerText = progress.percent + '%';
+      document.getElementById('days').innerText = progress.days;
+      document.getElementById('sessions').innerText = progress.sessions;
+      document.getElementById('words').innerText = progress.words;
+    }
+
+    function logSession() {
+      const today = new Date().toDateString();
+      if (progress.lastVisit !== today) {
+        progress.days++;
+        progress.lastVisit = today;
+      }
+      progress.sessions++;
+      progress.words += Math.floor(Math.random() * 50) + 20;
+      progress.percent = Math.min(100, progress.percent + 5);
+
+      localStorage.setItem('englishProgress', JSON.stringify(progress));
+      updateProgress();
+
+      alert("Session logged! Keep going! 🚀");
+    }
+
+    // Load
+    window.onload = function() {
+      updateProgress();
+
+      // Animate questions
+      document.querySelectorAll('.question').forEach((q, i) => {
+        q.style.animationDelay = (i * 0.3) + 's';
+        q.style.opacity = 1;
+      });
+    };
+
+    // Auto-scroll to section if hash
+    if (window.location.hash) {
+      setTimeout(() => {
+        document.querySelector(window.location.hash).scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+  </script>
+</body>
+</html>
